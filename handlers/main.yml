@@ -1,0 +1,6 @@
+---
+
+- name: restart strongswan service
+  service:
+    name: "{{ strongswan_service }}"
+    state: restarted

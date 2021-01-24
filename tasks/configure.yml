@@ -1,0 +1,52 @@
+---
+
+- name: prepare strongswan core cfg
+  template:
+    src: "ipsec.conf.j2"
+    dest: "{{ strongswan_config_base }}/ipsec.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify: restart strongswan service
+
+- name: prepare strongswan secrets cfg
+  template:
+    src: "ipsec.secrets.j2"
+    dest: "{{ strongswan_config_base }}/ipsec.secrets"
+    owner: root
+    group: root
+    mode: 0640
+  no_log: true
+  notify: restart strongswan service
+
+- name: prepare certs
+  block:
+    - name: place caCert
+      copy:
+        src: "{{ strongswan_certs.cacert.source }}"
+        dest: "{{ strongswan_certs.cacert.dest }}"
+        owner: root
+        group: root
+      no_log: true
+    - name: place server cert
+      copy:
+        src: "{{ strongswan_certs.server_cert.source }}"
+        dest: "{{ strongswan_certs.server_cert.dest }}"
+        owner: root
+        group: root
+      no_log: true
+    - name: place server key
+      copy:
+        src: "{{ strongswan_certs.server_key.source }}"
+        dest: "{{ strongswan_certs.server_key.dest }}"
+        owner: root
+        group: root
+        mode: 0600
+      no_log: true
+  when: strongswan_place_certs
+
+- name: ensure the service is started and enabled
+  service:
+    name: "{{ strongswan_service }}"
+    state: started
+    enabled: yes

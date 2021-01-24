@@ -1,0 +1,6 @@
+---
+
+- name: install strongswan
+  apt:
+    name: "{{ strongswan_packages }}"
+    state: present

@@ -1,0 +1,61 @@
+# {{ ansible_managed }}
+
+config setup
+{% if strongswan_cachecrls is defined %}
+	cachecrls="{{ strongswan_cachecrls }}"
+{% endif %}
+{% if strongswan_charondebug is defined %}
+	charondebug="{{ strongswan_charondebug }}"
+{% endif %}
+{% if strongswan_charonstart is defined %}
+	charonstart="{{ strongswan_charonstart }}"
+{% endif %}
+{% if strongswan_strictcrlpolicy is defined %}
+	strictcrlpolicy="{{ strongswan_strictcrlpolicy }}"
+{% endif %}
+{% if strongswan_uniqueids is defined %}
+	uniqueids="{{ strongswan_uniqueids }}"
+{% endif %}
+
+conn %default
+{% for option in [
+  'auto', 'closeaction', 'type', 'authby', 'ike', 'aggressive', 'reauth',
+  'fragmentation', 'ah', 'esp', 'compress', 'ikelifetime', 'type', 'keyexchange',
+  'ikelife', 'keyexhange', 'keytime', 'lifetime', 'margintime', 'mobike',
+  'rekeymargin', 'rekeyfuzz', 'keyingtries', 'dpdaction', 'dpddelay', 'dpdtimeout' ] %}
+{% if strongswan_conn_default[option] is defined %}
+	{{ option }}="{{ strongswan_conn_default[option] }}"
+{% endif %}
+{% endfor %}
+
+{% if strongswan_conn is defined and strongswan_conn|length > 0 %}
+{% for item in strongswan_conn %}
+conn {{ item.name }}
+{% for option in [
+  'auto', 'closeaction', 'type', 'authby', 'ike', 'aggressive', 'reauth',
+  'fragmentation', 'ah', 'esp', 'compress', 'ikelifetime', 'type', 'keyexchange',
+  'ikelife', 'keyexhange', 'keytime', 'lifetime', 'margintime', 'mobike',
+  'rekeymargin', 'rekeyfuzz', 'keyingtries', 'dpdaction', 'dpddelay', 'dpdtimeout' ] %}
+{% if item.conn[option] is defined %}
+	{{ option }}="{{ item.conn[option] }}"
+{% endif %}
+{% endfor %}
+	left="{{ item.left.address }}"
+{% for option in [
+  'ikeport', 'protoport', 'subnet', 'sourceip', 'allowany', 'id',
+  'auth', 'ca', 'cert', 'sendcert', 'dns', 'firewall', 'updown', 'hostaccess' ] %}
+{% if item.left[option] is defined %}
+	left{{ option }}="{{ item.left[option] }}"
+{% endif %}
+{% endfor %}
+	right="{{ item.right.address }}"
+{% for option in [
+  'ikeport', 'protoport', 'subnet', 'sourceip', 'allowany', 'id',
+  'auth', 'ca', 'cert', 'sendcert', 'dns', 'firewall', 'updown', 'hostaccess' ] %}
+{% if item.right[option] is defined %}
+	right{{ option }}="{{ item.right[option] }}"
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+{% endif %}

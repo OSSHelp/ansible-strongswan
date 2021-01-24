@@ -1,0 +1,28 @@
+---
+strongswan_setup: full
+strongswan_packages: [strongswan]
+strongswan_config_base: /etc
+strongswan_conn_default:
+  auto: add
+  type: tunnel
+  authby: psk
+  keyexchange: ike
+  ikelifetime: 3h
+  lifetime: 60m
+  margintime: 15m
+  keyingtries: 3
+  dpdaction: restart
+  dpddelay: 30
+strongswan_conn_custom: {}
+strongswan_conn: []
+strongswan_place_certs: false
+strongswan_certs:
+  cacert:
+    source: ''
+    dest: '/etc/ipsec.d/cacerts/caCert.pem'
+  server_cert:
+    source: ''
+    dest: '/etc/ipsec.d/certs/server-cert.pem'
+  server_key:
+    source: ''
+    dest: '/etc/ipsec.d/private/server-key.pem'
